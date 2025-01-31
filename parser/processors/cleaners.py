@@ -6,6 +6,7 @@ from parser.config import process_env_variable, cleaner_value
 
 def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
     value = entry.get('group-title', '')
+    url = entry.get('stream_url')
     # print(f"Original group-title value: {value}")
     combined_cleaners = cleaner_value(process_env_variable)
     cleaners = enable_cleaners(combined_cleaners)
@@ -73,14 +74,17 @@ def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
                     entry['movie_title'] = movie_title
                     entry['movie'] = True
                     value = re.sub(re.escape(entry['movie_title']), '', value).strip()
+            elif "/movie/" in url.lower():
+                entry['movie_title'] = value
+                entry['movie'] = True
 
             # Movie Date Extraction
-            movie_date_match = re.search(
-                r'\b(19[0-9][0-9]|\(19[3-9][0-9]\)|20[0-9][0-9]|\(20[0-9][0-9]\))\b(?!.*\b(19[0-9][0-9]|\(19[3-9][0-9]\)|20[0-9][0-9]|\(20[0-9][0-9]\))\b)',
-                value)
-            if movie_date_match:
-                entry['movie_date'] = movie_date_match.group(0).strip()
-                value = re.sub(re.escape(entry['movie_date']), '', value).strip()
+            # movie_date_match = re.search(
+            #     r'\b(19[0-9][0-9]|\(19[3-9][0-9]\)|20[0-9][0-9]|\(20[0-9][0-9]\))\b(?!.*\b(19[0-9][0-9]|\(19[3-9][0-9]\)|20[0-9][0-9]|\(20[0-9][0-9]\))\b)',
+            #     value)
+            # if movie_date_match:
+            #     entry['movie_date'] = movie_date_match.group(0).strip()
+            #     value = re.sub(re.escape(entry['movie_date']), '', value).strip()
 
         # Determine if it's Live TV based on duration
         if 'movie' not in entry and 'tv_show' not in entry and 'duration' in entry and entry['duration'] == '-1':

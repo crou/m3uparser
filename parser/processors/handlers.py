@@ -61,11 +61,15 @@ def handle_entry(entry, tv_dir, movies_dir, unsorted_dir, write_to_file, errors)
         elif entry.get('movie') and not entry.get("exclude"):
             movie_title = entry.get('movie_title')
             movie_date = entry.get('movie_date')
-            movie_dir_path = os.path.join(movies_dir, f"{movie_title} ({movie_date})")
+            if movie_date:
+                movie_title_label = f"{movie_title} ({movie_date})"
+            else:
+                movie_title_label = movie_title
+            movie_dir_path = os.path.join(movies_dir, movie_title_label)
             if not os.path.exists(movie_dir_path):
                 os.makedirs(movie_dir_path)
                 # print(f"Created directory: {movie_dir_path}")
-            strm_file = os.path.join(movie_dir_path, f"{movie_title} ({movie_date}).strm")
+            strm_file = os.path.join(movie_dir_path, f"{movie_title_label}.strm")
             # print(f"Writing to file: {strm_file}")
             write_to_file(strm_file, entry.get('stream_url', ''))
             return strm_file
